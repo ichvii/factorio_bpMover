@@ -1,0 +1,33 @@
+data:extend{
+  {
+    type = "item",
+    name = "conman2",
+    icon = "__base__/graphics/icons/roboport.png",
+    icon_size = 32,
+    subgroup = "logistic-network",
+    order = "c[signal]-b[conman]",
+    place_result="conman2",
+    stack_size = 50,
+  },
+  {
+    type = "item",
+    name = "conman-control2",
+    icon = "__base__/graphics/icons/roboport.png",
+    icon_size = 32,
+    flags = {"hidden"},
+    subgroup = "logistic-network",
+    order = "c[signal]-b[conman-control]",
+    place_result="conman-control2",
+    stack_size = 50,
+  },
+  {
+    type="blueprint-book",
+	name="privatebpbook",
+	icon="__base__/graphics/icons/blueprint-book.png",
+	icon_size=32,
+	flags={hidden},
+	inventory_size=32000,
+	show_in_library=false,
+	stack_size=1,
+  },	
+}
