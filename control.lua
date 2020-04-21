@@ -201,8 +201,8 @@ local function special_find_entity_in_bp_pos (bp, pos)
   local pos_y =anchor_pos.y + pos.y
   for _, ent in pairs(entities) do
     if ent.position.x == pos_x and ent.position.y == pos_y then
-	  return ent  
-	end
+      return ent  
+    end
   end 
 end
 
@@ -490,22 +490,29 @@ local function onTickManager(manager)
   local outInv = manager.ent.get_inventory(defines.inventory.assembling_machine_output)
   local signals1 = manager.cc1.get_merged_signals()
   local signals2 = manager.cc2.get_merged_signals()
-  local internal_book= insert_and_find(inInv,"privatebpbook")
   if signals1 then
+    local internal_book= insert_and_find(inInv,"privatebpbook")
     if get_signal_from_set(knownsignals.I,signals1)==1 then
 	--enumerate all books
-	  for i =1, #inInv,1 do  --#global.ColoredBlueprints + #global.ColoredBlueprintBooks, 1 do
-		if inInv[i].valid and inInv[i].valid_for_read and inInv[i].is_blueprint_book then enumerate_book(inInv[i]) end
-	  end
-	  return
-	end
+      for i =1, #inInv,1 do  --#global.ColoredBlueprints + #global.ColoredBlueprintBooks, 1 do
+        if inInv[i].valid and inInv[i].valid_for_read and inInv[i].is_blueprint_book then enumerate_book(inInv[i]) end
+      end
+      return
+    end
     if get_signal_from_set(knownsignals.O,signals1)==0 then outInv = inInv end
+    if get_signal_from_set(knownsignals.R,signals1)==1 then
+      local p = {}
+      p.x=get_signal_from_set(knownsignals.X,signals1)
+      p.y=get_signal_from_set(knownsignals.Y,signals1)
+      local manager2= manager.ent.surface.find_entity(conman2,p) or return
+      inInv= manager2.ent.get_inventory(defines.inventory.assembling_machine_input)
+    end
     start= handle_blueprint_signals(inInv,signals1)
-	target=handle_blueprint_signals(outInv,signals2)
-	local name = target.bp.name
-	local delete= (get_signal_from_set(knownsignals.D,signals1) == 1)
-	if not target.item then 
-	  target.item = insert_and_find(outInv,start.item.name)
+    target=handle_blueprint_signals(outInv,signals2)
+    local name = target.bp.name
+    local delete= (get_signal_from_set(knownsignals.D,signals1) == 1)
+    if not target.item then 
+      target.item = insert_and_find(outInv,start.item.name)
     end
 	copy(start,target,name,delete,internal_book)	
   end 
