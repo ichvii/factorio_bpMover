@@ -504,7 +504,8 @@ local function onTickManager(manager)
       local p = {}
       p.x=get_signal_from_set(knownsignals.X,signals1)
       p.y=get_signal_from_set(knownsignals.Y,signals1)
-      local manager2= manager.ent.surface.find_entity(conman2,p) or return
+      local manager2= manager.ent.surface.find_entity(conman2,p)
+      if not manager2 then return end
       inInv= manager2.ent.get_inventory(defines.inventory.assembling_machine_input)
     end
     start= handle_blueprint_signals(inInv,signals1)
