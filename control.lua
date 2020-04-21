@@ -390,8 +390,8 @@ local function copy_blueprint_as(bp1, bp2, name)
   bp2.set_blueprint_entities(bp1.get_blueprint_entities())
   bp2.set_blueprint_tiles(bp1.get_blueprint_tiles())
   if bp2.is_blueprint_setup() then
-    bp2.blueprint_icons=bp1.blueprint_icons
-    bp2.label=bp1.label  
+    bp2.blueprint_icons=bp1.blueprint_icons or {}
+    bp2.label=bp1.label or ''	
   end
 end
 
@@ -404,7 +404,7 @@ local function copy_book_as(book1,book2,name,delete,offset)
     offset=0
 	inv2.clear()
   end
-  book2.label=book1.label
+  book2.label=book1.label or ''
   for i = 1, inv1.get_item_count(),1 do
     copy_blueprint_as(inv1[i],inv2[i+offset],name)
   end
@@ -418,8 +418,8 @@ local function copy(start,target,name,delete,internal_book)
     --if moving from one item to the same, set delete false and possibly change bp colors, using internal_book as memory
 	delete=false
     if item1.is_blueprint then
-	  copy(start,internal_book.get_inventory()[1],name,delete,internal_book)
-	  copy(internal_book.get_inventory()[1],target,name,delete,internal_book)  
+	  copy(start,internal_book.get_inventory(defines.inventory.item_main)[1],name,delete,internal_book)
+	  copy(internal_book.get_inventory(defines.inventory.item_main)[1],target,name,delete,internal_book)  
 	elseif item1.is_blueprint_book then
 	  copy(start,internal_book,name,delete,internal_book)
 	  copy(internal_book,target,name,delete,internal_book)
@@ -456,6 +456,7 @@ local function handle_blueprint_signals(inv, signals)
   if not signals then return {bp={},book={}} end
   local book = {}
   local bp={}
+  local item
   for _, signal in pairs (global.ColoredBlueprintBooks) do 
     if get_signal_from_set(signal,signals) ~=0 then
 	  book.name= signal.name
@@ -505,11 +506,11 @@ local function onTickManager(manager)
       p.x=get_signal_from_set(knownsignals.X,signals1)
       p.y=get_signal_from_set(knownsignals.Y,signals1)
       local manager2ent= manager.ent.surface.find_entity('conman2',p)
-      if not manager2ent then return end
+	  if not manager2ent then return end
       inInv= manager2ent.get_inventory(defines.inventory.assembling_machine_input)
     end
-    start= handle_blueprint_signals(inInv,signals1)
-    target=handle_blueprint_signals(outInv,signals2)
+    local start= handle_blueprint_signals(inInv,signals1)
+    local target=handle_blueprint_signals(outInv,signals2)
     local name = target.bp.name
     local delete= (get_signal_from_set(knownsignals.D,signals1) == 1)
     if not target.item then 
